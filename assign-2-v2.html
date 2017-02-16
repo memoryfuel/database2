@@ -1,0 +1,382 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="assign-2-styles.css">
+
+    <title>assignment 1</title>
+    
+</head>
+
+<body>
+    <div id="container">
+      <!-- <video id="video" width="640" height="480"></video> -->
+
+      <div id="currTime"></div>
+    </div>
+</body>
+
+<script
+  src="https://code.jquery.com/jquery-3.1.1.min.js"
+  integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+  crossorigin="anonymous"></script>
+
+<!--jquery UI for zIndex fx-->
+<script
+  src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+  integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
+  crossorigin="anonymous"></script>
+
+<script>
+// var video = document.getElementById('video');
+// var source = document.createElement('source');
+
+// source.setAttribute('src', 'cameras/1.mov');
+
+var curr_folder = "cameras"; //odd
+
+
+// video.appendChild(source);
+//video.play();
+
+var curr_clip = 1;
+
+//Recursive function doesn't work...
+/*
+function changeSrc(i){
+    if(i == 5){
+      return;
+    }
+    var new_src = "";
+    i++;
+    new_src = new_src.concat(curr_folder, "/", i, ".mov");
+    source.setAttribute('src', new_src); 
+    video.load();
+    video.play();
+    //window.setTimeout(changeSrc(i), 500*i);
+}
+
+Preloading using AJAX
+for(var i=1; i<6; i++){
+    var req = new XMLHttpRequest();
+    var new_src = "";
+    new_src = new_src.concat(curr_folder, "/", i, ".mov");
+    req.open('GET', new_src, true);
+    req.responseType = 'blob';
+
+    req.onload = function() {
+       // Onload is triggered even on 404
+       // so we need to check the status code
+       if (this.status === 200) {
+          var videoBlob = this.response;
+          var vid = URL.createObjectURL(videoBlob); // IE10+
+          // Video is now downloaded
+          // and we can set it as source on the video element
+          video.src = vid;
+          console.log("successful AJAX");
+       }
+    }
+
+    req.send();
+}
+*/
+
+/*
+function changeSrc(){
+    var new_src = "";
+    curr_clip++;
+    new_src = new_src.concat(curr_folder, "/", curr_clip, ".mov");
+    source.setAttribute('src', new_src); 
+    video.load();
+    video.play();
+}
+
+
+function play(){
+  for(var i=5; i>1; i--){
+    //Logistic equation: http://mathworld.wolfram.com/LogisticEquation.html
+    var r = 10; //Malthusian parameter
+    var scale_factor = 5000;
+    var dT = 1/(1+(1/0.05 - 1)*Math.exp((r-(r*2))*i/10));
+    console.log(dT);
+    console.log(scale_factor*dT);
+    window.setTimeout(changeSrc, scale_factor*dT);
+  }
+}
+
+
+setTimeout(play, 20000);
+*/
+
+var time_arr = new Array(25);
+function set_time_arr(){
+  for(var i=0; i<time_arr.length; i++){
+    var r = 5; //Malthusian parameter
+    var scale_factor = 5000;
+    var dT = 1/(1+(1/0.05 - 1)*Math.exp((r-(r*2))*i/10));
+    time_arr[i] = scale_factor*dT;
+    console.log(scale_factor*dT);
+  }
+}
+set_time_arr();
+
+var folder_arr = ['cameras','far','numbers', 'road', 'weirdobjs'];
+
+var vid_arr = new Array(25);
+
+//Create videos
+var vid_counter = 0;
+var folder_arr_idx = 0;
+for(var i=0; i<25; i++){
+  if(vid_counter == 5){
+    vid_counter = 0;
+    folder_arr_idx = folder_arr_idx+1;
+  }
+  var new_vid = document.createElement('video');
+  
+  var new_src = "";
+  new_src = new_src.concat(folder_arr[folder_arr_idx], "/", vid_counter, ".mov");
+  new_vid.src = new_src;
+  
+  new_vid.width = 640;
+  new_vid.height = 480;
+  
+  var new_id = "";
+  new_id = new_id.concat(folder_arr[folder_arr_idx], vid_counter);
+  new_vid.id = new_id;
+  
+  new_vid.style.position = "absolute";
+  new_vid.style.left = 300+'px';
+  new_vid.style.top = 300+'px';
+  // new_vid.style.left = 100+i*100+'px';
+  // new_vid.style.top = 100+i*100+'px';
+
+  new_vid.style.zIndex = i;
+
+  new_vid.preload = 'auto';
+  // new_vid.play();
+
+  vid_arr.push(new_vid);
+
+  var container = document.getElementById('container');
+  container.appendChild(new_vid);
+  vid_counter = vid_counter+1;
+}
+
+function updateZ(){
+  // $('cameras3').css('zIndex', 1000);
+  document.getElementById('cameras3').style.zIndex = "1000";
+}
+// setTimeout(updateZ, 5000);
+
+
+
+var curr_vid = document.getElementById('cameras0');
+function beginPlay(){
+  // curr_vid = document.getElementById('cameras0');
+  curr_vid.play();
+  curr_vid.style.zIndex += 100;
+}
+
+beginPlay();
+
+window.onload = function(){ //need this for dynamic id additions
+  var folder_arr = ['cameras','far','numbers', 'road', 'weirdobjs'];
+  var num_folders = 5;
+  var num_vids = 25;
+  var curr_folder = "cameras";
+  
+  //var curr_index = 0;
+
+  var vid_counter = 0;
+  var folder_arr_idx = 0;
+  var baked_array = ['cameras0', 'cameras1', 'cameras2', 'cameras3','cameras4','far0', 'far1', 'far2', 'far3', 'far4','numbers0','numbers1','numbers2','numbers3','numbers4','road0','road1','road2','road3','road4','weirdobjs1','weirdobjs2','weirdobjs3','weirdobjs4'];
+
+  for(var j=0; j<4; j++){
+    
+    console.log(time_arr[j]);
+    // var item1 = baked_array[j];
+    // var item2 = baked_array[j+1];
+    
+    // var myfunction = function(item1, item2){
+      
+    //   // var curr_str = baked_array[j];
+    //   console.log(item1);
+    //   var curr_vid = document.getElementById(item1);
+    //   var next_vid = document.getElementById(item2);
+    //   curr_vid.pause();
+    //   next_vid.play();
+    //   next_vid.style.zIndex -= 100;
+    // };
+    // setTimeout(myfunction(item1, item2), time_arr[j]);
+
+    // setTimeout(function(item1, item2){
+      
+    //   // var curr_str = baked_array[j];
+    //   console.log(item1);
+    //   var curr_vid = document.getElementById(item1);
+    //   var next_vid = document.getElementById(item2);
+    //   curr_vid.pause();
+    //   next_vid.play();
+    //   next_vid.style.zIndex -= 100;
+    // }, time_arr[j]);
+
+    setTimeout(function(){
+      
+      var curr_str = "";
+      curr_str = curr_str.concat(folder_arr[folder_arr_idx], vid_counter);
+      console.log(curr_str);
+      var curr_vid = document.getElementById(curr_str);
+      curr_vid.pause();
+      var new_str = "";
+      //curr_index = curr_index+1;
+      vid_counter = vid_counter+1;
+
+      
+      
+      new_str = new_str.concat(folder_arr[folder_arr_idx], vid_counter);
+      console.log(new_str);
+      curr_vid = document.getElementById(new_str);
+      curr_vid.style.zIndex += 100;
+      curr_vid.play();
+      
+
+    }, time_arr[j]);
+  }//for
+
+  var vid_counter2 = 0;
+  for(var j=4; j<8; j++){
+    setTimeout(function(){
+      
+      var curr_str = "";
+      curr_str = curr_str.concat('far', vid_counter2);
+      console.log(curr_str);
+      var curr_vid = document.getElementById(curr_str);
+      curr_vid.pause();
+      var new_str = "";
+      //curr_index = curr_index+1;
+      vid_counter2 = vid_counter2+1;
+
+      
+      
+      new_str = new_str.concat('far', vid_counter2);
+      console.log(new_str);
+      curr_vid = document.getElementById(new_str);
+      curr_vid.style.zIndex += 100;
+      curr_vid.play();
+      
+
+    }, time_arr[j]);
+  }
+
+  var vid_counter3 = 0; //actually do need a new counter...
+  for(var j=8; j<12; j++){
+    setTimeout(function(){
+      
+      var curr_str = "";
+      curr_str = curr_str.concat('numbers', vid_counter3);
+      console.log(curr_str);
+      var curr_vid = document.getElementById(curr_str);
+      curr_vid.pause();
+      var new_str = "";
+      //curr_index = curr_index+1;
+      vid_counter3 = vid_counter3+1;
+
+      
+      
+      new_str = new_str.concat('numbers', vid_counter3);
+      console.log(new_str);
+      curr_vid = document.getElementById(new_str);
+      curr_vid.style.zIndex += 100;
+      curr_vid.play();
+      
+
+    }, time_arr[j]);
+
+
+  }
+
+  var vid_counter4 = 0; //actually do need a new counter...
+  for(var j=12; j<16; j++){
+    setTimeout(function(){
+      
+      var curr_str = "";
+      curr_str = curr_str.concat('road', vid_counter4);
+      console.log(curr_str);
+      var curr_vid = document.getElementById(curr_str);
+      curr_vid.pause();
+      var new_str = "";
+      //curr_index = curr_index+1;
+      vid_counter4 = vid_counter4+1;
+
+      
+      
+      new_str = new_str.concat('road', vid_counter4);
+      console.log(new_str);
+      curr_vid = document.getElementById(new_str);
+      curr_vid.style.zIndex += 100;
+      curr_vid.play();
+      
+
+    }, time_arr[j]);
+  }
+
+  var vid_counter5 = 0;
+  for(var j=16; j<20; j++){
+    setTimeout(function(){
+      
+      var curr_str = "";
+      curr_str = curr_str.concat('weirdobjs', vid_counter5);
+      console.log(curr_str);
+      var curr_vid = document.getElementById(curr_str);
+      curr_vid.pause();
+      var new_str = "";
+      //curr_index = curr_index+1;
+      vid_counter5 = vid_counter5+1;
+
+      
+      
+      new_str = new_str.concat('weirdobjs', vid_counter5);
+      console.log(new_str);
+      curr_vid = document.getElementById(new_str);
+      curr_vid.style.zIndex += 100;
+      curr_vid.play();
+      
+
+    }, time_arr[j]);
+  }
+
+
+
+
+}
+
+//old / doesn't work
+/*function changeState(curr_index, curr_folder){
+  var curr_str = "";
+  curr_str = curr_str.concat(curr_folder, curr_index);
+  console.log(curr_str);
+  var curr_vid = document.getElementById(curr_str);
+  curr_vid.pause();
+  var new_str = "";
+  curr_index = curr_index+1;
+  
+  new_str = new_str.concat(curr_folder, curr_index);
+  console.log(new_str);
+  curr_vid = document.getElementById(new_str);
+  curr_vid.play();
+}*/
+
+
+// var updateVidTime = function() {
+//   var curr_video = document.getElementById('cameras4');
+//   document.getElementById('currTime').innerHTML = curr_video.currentTime;
+// }
+
+// setInterval(updateVidTime, 100);
+
+</script>
+
+<!--By Danny Diaz-Etchevehere-->
+</html>
